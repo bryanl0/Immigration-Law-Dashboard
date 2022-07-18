@@ -1,16 +1,14 @@
-from attr import NOTHING
-from pytz import country_names
 import streamlit as st
 import numpy as np
 import pandas as pd
 import altair as alt
 
-st.title("Refugee Protection Division Decisions in 2019")
+st.title("Canada's Refugee Claims in 2019")
 
 ## function to initialize importing data
 @st.cache
 def initialize_df():
-    RPD_data = pd.read_excel("data/2019 RPD.xlsx")
+    RPD_data = pd.read_pickle("data/data.pkl")
 
     countries = RPD_data["Country Persecution"].unique()
     countries = [x for x in countries if type(x)==str] # gets rid of NaN in list of countries
@@ -99,3 +97,12 @@ with st.container():
     st.altair_chart(bar)
 
 st.write(df)
+
+bar = alt.Chart(df).mark_circle().encode(
+    x='positive',
+    y='negative'
+).project(
+    "naturalEarth1"
+)
+
+st.altair_chart(bar)
