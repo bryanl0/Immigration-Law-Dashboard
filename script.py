@@ -5,21 +5,27 @@ import altair as alt
 
 st.title("Canada's Refugee Claims in 2019")
 
-## function to initialize importing data
+## read pickled full dataset
 @st.cache
-def initialize_df():
-    RPD_data = pd.read_pickle("data/data.pkl")
+def read_data():
+    return pd.read_pickle("data/data.pkl")
 
-    countries = RPD_data["Country Persecution"].unique()
+data = read_data()
+
+## prepare dataset for bar chart
+@st.cache
+def prep_bar_chart():
+
+    countries = data["Country Persecution"].unique()
     countries = [x for x in countries if type(x)==str] # gets rid of NaN in list of countries
     
-    positive_regular = list(map(lambda x: RPD_data.loc[(RPD_data["Country Persecution"]==x) & (RPD_data["Explanation "]=="Positive")].shape[0], countries))
-    positive_expedited = list(map(lambda x: RPD_data.loc[(RPD_data["Country Persecution"]==x) & (RPD_data["Explanation "]=="Expedited Positive")].shape[0], countries))
-    negative_regular = list(map(lambda x: RPD_data.loc[(RPD_data["Country Persecution"]==x) & (RPD_data["Explanation "]=="Negative")].shape[0], countries))
-    negative_NCB = list(map(lambda x: RPD_data.loc[(RPD_data["Country Persecution"]==x) & (RPD_data["Explanation "]=="Neg. No Cred Basis")].shape[0], countries))
-    withdrawn = list(map(lambda x: RPD_data.loc[(RPD_data["Country Persecution"]==x) & (RPD_data["Explanation "]=="Withdrawn")].shape[0], countries))
-    abandoned = list(map(lambda x: RPD_data.loc[(RPD_data["Country Persecution"]==x) & (RPD_data["Explanation "]=="Abandoned")].shape[0], countries))
-    deceased = list(map(lambda x: RPD_data.loc[(RPD_data["Country Persecution"]==x) & (RPD_data["Explanation "]=="Deceased")].shape[0], countries))
+    positive_regular = list(map(lambda x: data.loc[(data["Country Persecution"]==x) & (data["Explanation "]=="Positive")].shape[0], countries))
+    positive_expedited = list(map(lambda x: data.loc[(data["Country Persecution"]==x) & (data["Explanation "]=="Expedited Positive")].shape[0], countries))
+    negative_regular = list(map(lambda x: data.loc[(data["Country Persecution"]==x) & (data["Explanation "]=="Negative")].shape[0], countries))
+    negative_NCB = list(map(lambda x: data.loc[(data["Country Persecution"]==x) & (data["Explanation "]=="Neg. No Cred Basis")].shape[0], countries))
+    withdrawn = list(map(lambda x: data.loc[(data["Country Persecution"]==x) & (data["Explanation "]=="Withdrawn")].shape[0], countries))
+    abandoned = list(map(lambda x: data.loc[(data["Country Persecution"]==x) & (data["Explanation "]=="Abandoned")].shape[0], countries))
+    deceased = list(map(lambda x: data.loc[(data["Country Persecution"]==x) & (data["Explanation "]=="Deceased")].shape[0], countries))
 
     positive_all = [sum(x) for x in zip(positive_regular, positive_expedited)]
     negative_all = [sum(x) for x in zip(negative_regular, negative_NCB)]
@@ -32,9 +38,22 @@ def initialize_df():
 
     return df
 
-df = initialize_df()
+df = prep_bar_chart()
 
-## Bar Chart
+## top metrics section
+with st.container():
+
+    st.header("At A Glance:")
+
+    col1, col2, col3, col4, col5 = st.columns(5)
+    col1.metric("Cases Decided", df.total.sum())
+    col2.metric("Positive Treatment", df.positive.sum())
+    col3.metric("Negative Treatment", df.negative.sum())
+    col4.metric("Other Treatment", df.other.sum())
+    col5.metric("Overall Success Rate", str(df.positive.sum()/df.total.sum()*100)[:5]+"%")
+    
+
+## bar chart section
 with st.container():
 
     def make_bar_chart(df_bar):
@@ -62,7 +81,7 @@ with st.container():
     
     # display all countries
     if country_selection == 'All Countries': 
-        top_x = st.slider('How many countries to display?', 0, len(df), 25, help='Number of countries to display')
+        top_x = st.slider('How many countries to display?', 0, len(df), 30, help='Number of countries to display')
 
         df_top_x = df_sorted[:top_x]
 
@@ -96,13 +115,4 @@ with st.container():
 
     st.altair_chart(bar)
 
-st.write(df)
-
-bar = alt.Chart(df).mark_circle().encode(
-    x='positive',
-    y='negative'
-).project(
-    "naturalEarth1"
-)
-
-st.altair_chart(bar)
+st.write(data)

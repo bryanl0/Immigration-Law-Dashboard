@@ -1,0 +1,16 @@
+{
+  "name": "streamlit_custom_metric",
+  "version": "1.0.0",
+  "description": "a custom metrics component for streamlit made with React",
+  "main": "index.tsx",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Bryan Lo",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "^5.0.1"
+  }
+}
