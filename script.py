@@ -1,9 +1,25 @@
+import os
+import streamlit.components.v1 as components
 import streamlit as st
 import numpy as np
 import pandas as pd
 import altair as alt
 
+_RELEASE = False
+
+if not _RELEASE:
+    _component_func = components.declare_component(
+        "custom_metric",
+        url="http://localhost:3000"
+    )
+
+def custom_metric():
+    component_value = _component_func()
+    return component_value
+
 st.title("Canada's Refugee Claims in 2019")
+num_clicks = custom_metric()
+st.write(num_clicks)
 
 ## read pickled full dataset
 @st.cache
