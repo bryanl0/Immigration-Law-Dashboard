@@ -4,7 +4,7 @@ import CustomMetric from "./CustomMetric"
 
 ReactDOM.render(
     <React.StrictMode>
-        <CustomMetric />
+        <CustomMetric /> 
     </React.StrictMode>,
     document.getElementById("root")
 )

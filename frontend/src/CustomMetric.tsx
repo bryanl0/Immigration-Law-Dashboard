@@ -3,7 +3,10 @@ import {
     StreamlitComponentBase,
     withStreamlitConnection
 } from "streamlit-component-lib"
-import React, {ReactNode} from "react"
+import * as React from "react"
+import Button from "@mui/material/Button"
+import styled from '@emotion/styled'
+
 
 interface State {
     numClicks: number
@@ -13,14 +16,16 @@ class CustomMetric extends StreamlitComponentBase<State> {
 
     public state = {numClicks : 0}
 
-    public render = (): ReactNode => {
+    public render = (): React.ReactNode => {
+        const StyledButton = styled(Button)({
+            margin: "0px 0px 10px 0px",
+        });
         return (
-            <button 
-            style={{marginLeft:20, marginTop:20, marginBottom:20}}
-            onClick={this.onClicked}>
-                Hello World
-            </button>
-        )
+            <span>
+                <StyledButton variant="contained"
+                onClick={this.onClicked}>Hello World</StyledButton>
+            </span>
+        );
     }
 
     private onClicked = (): void => {
